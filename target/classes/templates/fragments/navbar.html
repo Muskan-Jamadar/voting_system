@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="sidebar">
+
+    <style>
+        .sidebar {
+            height: 100vh;
+            width: 240px;
+            position: fixed;
+            background: linear-gradient(180deg, #1e293b, #0f172a);
+            color: white;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar h4 {
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .sidebar a:hover {
+            background: #334155;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar i {
+            font-size: 18px;
+        }
+
+        .menu-section {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 20px;
+            width: 85%;
+        }
+
+        .logout a {
+            background: #dc2626;
+            justify-content: center;
+            color: white;
+        }
+
+        .logout a:hover {
+            background: #b91c1c;
+        }
+    </style>
+
+    <div class="sidebar">
+
+        <h4>
+            <i class="bi bi-shield-lock"></i> Admin Panel
+        </h4>
+
+        <div class="menu-section">Main</div>
+
+        <a href="/admin">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+
+        <a href="/admin/candidates">
+            <i class="bi bi-people"></i> Manage Candidates
+        </a>
+
+        <a href="/admin/add-candidate">
+            <i class="bi bi-person-plus"></i> Add Candidate
+        </a>
+
+        <div class="menu-section">Management</div>
+
+        <a href="/admin/election-settings">
+            <i class="bi bi-gear"></i> Elections
+        </a>
+
+        <a href="/admin/users">
+            <i class="bi bi-person"></i> Users
+        </a>
+
+        <a href="/admin/analytics">
+            <i class="bi bi-bar-chart"></i> Analytics
+        </a>
+
+        <div class="logout">
+            <a href="/logout">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Online Voting System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            padding: 40px 35px;
+        }
+
+        .system-title {
+            text-align: center;
+            font-size: 14px;
+            color: #2563eb;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 30px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: gray;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-control {
+            height: 52px;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            padding-left: 15px;
+            font-size: 15px;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 0.15rem rgba(37,99,235,0.25);
+        }
+
+        .btn-main {
+            height: 52px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 17px;
+            transition: 0.3s;
+        }
+
+        .btn-login {
+            background: linear-gradient(to right, #2563eb, #3b82f6);
+            color: white;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-verify {
+            background: linear-gradient(to right, #16a34a, #22c55e);
+            color: white;
+        }
+
+        .btn-verify:hover {
+            transform: translateY(-2px);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: gray;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-container">
+    <div class="login-card">
+
+        <div class="system-title">ONLINE VOTING SYSTEM</div>
+        <h2 class="main-title">🔐 Secure Login</h2>
+        <p class="subtitle">Access your voter dashboard securely</p>
+
+        <!-- STEP 1 -->
+        <div id="step1">
+            <input type="text" id="username"
+                   class="form-control mb-3"
+                   placeholder="Enter Username">
+
+            <input type="password" id="password"
+                   class="form-control mb-4"
+                   placeholder="Enter Password">
+
+            <button class="btn btn-main btn-login w-100"
+                    onclick="sendOtp()">
+                Continue Secure Login
+            </button>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="step2" class="hidden">
+            <input type="text" id="otp"
+                   class="form-control mb-4"
+                   placeholder="Enter OTP">
+
+            <button class="btn btn-main btn-verify w-100"
+                    onclick="verifyOtp()">
+                Verify OTP & Login
+            </button>
+
+            <!-- 🔁 RESEND BUTTON (ADDED ONLY) -->
+            <div class="text-center mt-3">
+                <button id="resendBtn"
+                        class="btn btn-warning btn-sm"
+                        onclick="resendOtp()"
+                        disabled>
+                    Resend OTP
+                </button>
+            </div>
+        </div>
+
+        <!-- MESSAGE -->
+        <div id="msg" class="message"></div>
+
+        <!-- REGISTER -->
+        <div class="register-link">
+            New voter?
+            <a href="/register">Register Here</a>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            Secure Election Access • OTP Protected
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+function showMessage(text, type="success") {
+    const msg = document.getElementById("msg");
+    msg.innerText = text;
+    msg.className = "message " + type;
+}
+
+let interval;
+
+// ================= STEP 1 =================
+function sendOtp() {
+
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    if (!username || !password) {
+        showMessage("Please enter username and password", "error");
+        return;
+    }
+
+    fetch("/login-otp", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username, password})
+    })
+    .then(res => res.text())
+    .then(data => {
+
+        console.log("LOGIN RESPONSE:", data);
+
+        // ❌ BLOCK CASES (SHOW ERROR PROPERLY)
+        if (
+            data === "Account not verified. Please complete registration first." ||
+            data === "Invalid credentials" ||
+            data.includes("locked")
+        ) {
+            showMessage(data, "error");
+            return;
+        }
+
+        // ✅ OTP SENT
+        if (data.startsWith("OTP_SENT:")) {
+
+            showMessage("OTP sent to your email", "success");
+
+            document.getElementById("step1").classList.add("hidden");
+            document.getElementById("step2").classList.remove("hidden");
+
+            let expiry = parseInt(data.split(":")[1]);
+
+            startOtpTimer(expiry);
+
+            document.getElementById("resendBtn").disabled = true;
+
+        } else {
+            showMessage(data, "error");
+        }
+
+    })
+    .catch(() => {
+        showMessage("Login failed", "error");
+    });
+}
+
+// ================= STEP 2 =================
+function verifyOtp() {
+
+    const username = document.getElementById("username").value;
+    const otp = document.getElementById("otp").value;
+
+    fetch("/verify-login-otp", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username, otp})
+    })
+    .then(res => res.text())
+    .then(data => {
+
+        console.log("VERIFY RESPONSE:", data);
+
+        if (data.startsWith("SUCCESS")) {
+
+            let role = data.split(":")[1];
+
+            if (role === "ADMIN") {
+                window.location.href = "/admin";
+            } else {
+                window.location.href = "/home";
+            }
+
+        } else {
+            showMessage(data, "error");
+        }
+
+    })
+    .catch(() => {
+        showMessage("OTP verification failed", "error");
+    });
+}
+function startOtpTimer(expiryTime) {
+
+    let msg = document.getElementById("msg");
+
+    clearInterval(interval);
+
+    interval = setInterval(() => {
+
+        let now = Date.now();
+        let distance = expiryTime - now;
+
+        if (!distance || distance <= 0) {
+            clearInterval(interval);
+
+            msg.innerText = "⏳ OTP expired. Please request again.";
+            msg.className = "message error";
+
+            document.getElementById("otp").disabled = true;
+            document.getElementById("resendBtn").disabled = false;
+
+            return;
+        }
+
+        let minutes = Math.floor(distance / (1000 * 60));
+        let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        msg.innerText = `OTP expires in ${minutes}m ${seconds}s`;
+        msg.className = "message success";
+
+    }, 1000);
+}
+
+// ================= RESEND =================
+function sendOtp() {
+
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    if (!username || !password) {
+        showMessage("Please enter username and password", "error");
+        return;
+    }
+
+    fetch("/login-otp", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username, password})
+    })
+    .then(res => res.text())
+    .then(data => {
+
+        console.log("LOGIN RESPONSE:", data);
+
+        // ❌ BLOCKED RESPONSES (STOP HERE)
+        if (
+            data.includes("not verified") ||
+            data.includes("Invalid") ||
+            data.includes("locked")
+        ) {
+            showMessage(data, "error");
+            return;
+        }
+
+        // ✅ ONLY OTP SENT CASE
+        if (data.startsWith("OTP_SENT")) {
+
+        	if (!data.startsWith("OTP_SENT:")) {
+        	    showMessage(data, "error");
+        	    return;
+        	}
+
+        	let expiry = Number(data.replace("OTP_SENT:", "").trim());
+
+        	if (isNaN(expiry)) {
+        	    showMessage("Invalid OTP expiry received", "error");
+        	    return;
+        	}
+
+        	
+
+            showMessage("OTP sent successfully", "success");
+
+            // SWITCH UI
+            document.getElementById("step1").classList.add("hidden");
+            document.getElementById("step2").classList.remove("hidden");
+
+            // ENABLE INPUT
+            document.getElementById("otp").disabled = false;
+
+            // START TIMER
+            startOtpTimer(expiry);
+
+            // DISABLE RESEND INITIALLY
+            document.getElementById("resendBtn").disabled = true;
+
+        } else {
+            showMessage(data, "error");
+        }
+
+    })
+    .catch(() => {
+        showMessage("Server error during login", "error");
+    });
+}
+</script>
+
+</body>
+</html>

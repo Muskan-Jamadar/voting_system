@@ -1,0 +1,192 @@
+<!-- ===========================
+ FILE: src/main/resources/templates/landing.html
+ Real Voting System Landing Page
+ =========================== -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Voting System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e3a8a);
+            color: white;
+        }
+
+        header {
+            width: 100%;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        header h1 {
+            font-size: 28px;
+            color: #facc15;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: white;
+            margin-left: 20px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        .login-btn {
+            background: #2563eb;
+        }
+
+        .register-btn {
+            background: #16a34a;
+        }
+
+        nav a:hover {
+            opacity: 0.85;
+        }
+
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 50px;
+        }
+
+        .hero-text {
+            max-width: 600px;
+        }
+
+        .hero-text h2 {
+            font-size: 54px;
+            margin-bottom: 20px;
+            color: #facc15;
+        }
+
+        .hero-text p {
+            font-size: 20px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons a {
+            text-decoration: none;
+            padding: 14px 28px;
+            margin-right: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .hero-buttons .vote-btn {
+            background: #22c55e;
+            color: white;
+        }
+
+        .hero-buttons .learn-btn {
+            background: #facc15;
+            color: black;
+        }
+
+        .hero-buttons a:hover {
+            transform: scale(1.05);
+        }
+
+        .hero img {
+            width: 420px;
+            max-width: 100%;
+        }
+
+        .features {
+            display: flex;
+            justify-content: space-around;
+            padding: 60px 40px;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .feature-box {
+            text-align: center;
+            width: 250px;
+        }
+
+        .feature-box h3 {
+            margin: 15px 0;
+            color: #facc15;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #0f172a;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🗳 Online Voting System</h1>
+    <nav>
+        <a th:href="@{/login}" class="login-btn">Login</a>
+        <a th:href="@{/register}" class="register-btn">Register</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-text">
+        <h2>Secure. Transparent. Digital Voting.</h2>
+        <p>
+            Welcome to the modern Online Voting System where citizens can register,
+            login securely, and cast votes with complete transparency and safety.
+            Your vote matters — make it count.
+        </p>
+
+        <div class="hero-buttons">
+            <a th:href="@{/register}" class="vote-btn">Get Started</a>
+            <a href="#features" class="learn-btn">Learn More</a>
+        </div>
+    </div>
+
+    <div>
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Voting Illustration">
+    </div>
+</section>
+
+<section class="features" id="features">
+    <div class="feature-box">
+        <h3>🔐 Secure Login</h3>
+        <p>OTP and password protected authentication system.</p>
+    </div>
+
+    <div class="feature-box">
+        <h3>📊 Transparent Voting</h3>
+        <p>Fair election process with live result updates.</p>
+    </div>
+
+    <div class="feature-box">
+        <h3>🌐 Easy Access</h3>
+        <p>Vote anytime, anywhere with digital convenience.</p>
+    </div>
+</section>
+
+<footer>
+    © 2026 Online Voting System | Built with Spring Boot & Thymeleaf
+</footer>
+
+</body>
+</html>

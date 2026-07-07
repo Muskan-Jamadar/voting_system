@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Audit Logs</h2>
+
+<table border="1">
+<tr>
+    <th>User</th>
+    <th>Action</th>
+    <th>Time</th>
+</tr>
+
+<tr th:each="log : ${logs}">
+    <td th:text="${log.username}"></td>
+    <td th:text="${log.action}"></td>
+    <td th:text="${log.timestamp}"></td>
+</tr>
+
+</table>
+</body>
+</html>

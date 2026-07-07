@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Candidate</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body class="container mt-5">
+
+<h3 class="mb-4">Edit Candidate</h3>
+
+<form action="/admin/update-candidate" method="post">
+
+    <!-- Hidden ID -->
+    <input type="hidden" name="id" th:value="${candidate.id}">
+
+    <div class="mb-3">
+        <label>Name</label>
+        <input type="text" name="name" th:value="${candidate.name}" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label>Party</label>
+        <input type="text" name="party" th:value="${candidate.party}" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label>State</label>
+        <input type="text" name="state" th:value="${candidate.state}" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label>Party Logo</label>
+        <input type="text" name="partyLogo" th:value="${candidate.partyLogo}" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label>Election Type</label>
+        <select name="electionType" class="form-control">
+            <option value="Lok Sabha"
+                th:selected="${candidate.electionType == 'Lok Sabha'}">
+                Lok Sabha
+            </option>
+            <option value="State"
+                th:selected="${candidate.electionType == 'State'}">
+                State
+            </option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">
+        Update Candidate
+    </button>
+
+</form>
+
+</body>
