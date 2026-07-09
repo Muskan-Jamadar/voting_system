@@ -42,24 +42,34 @@ pipeline {
         }
 
         stage('Run Application') {
-            steps {
-                sh '''
-                echo "Checking target directory..."
-                ls -lh target
+    steps {
+        sh '''
+        echo "Target contents:"
+        ls -lh target
 
-                echo "Stopping old application..."
-                pkill -f demo-0.0.1-SNAPSHOT.jar || true
+        JAR=$(find target -maxdepth 1 -name "*.jar" ! -name "*.original" | head -n 1)
 
-                echo "Starting application..."
-                nohup java -jar target/demo-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+        if [ -z "$JAR" ]; then
+            echo "No executable JAR found!"
+            exit 1
+        fi
 
-                sleep 10
+        echo "Found JAR: $JAR"
 
-                echo "Application status:"
-                ps -ef | grep demo-0.0.1-SNAPSHOT.jar | grep -v grep
-                '''
-            }
-        }
+        pkill -f "$(basename "$JAR")" || true
+
+        nohup java -jar "$JAR" > app.log 2>&1 &
+
+        sleep 10
+
+        echo "Application process:"
+        ps -ef | grep "$(basename "$JAR")" | grep -v grep || true
+
+        echo "Application log:"
+        tail -20 app.log || true
+        '''
+    }
+}
 
     }
 
