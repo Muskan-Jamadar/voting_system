@@ -48,20 +48,19 @@ pipeline {
             pkill -f "demo-0.0.1-SNAPSHOT.jar" || true
 
             echo "Starting Spring Boot application..."
-            nohup $JAVA_HOME/bin/java -jar target/demo-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
 
-            sleep 15
+            BUILD_ID=dontKillMe \
+            nohup $JAVA_HOME/bin/java -jar target/demo-0.0.1-SNAPSHOT.jar \
+            > app.log 2>&1 &
 
-            echo "Checking if application is running..."
+            sleep 10
+
             ps -ef | grep demo | grep -v grep || true
-
-            echo "Checking port 8083..."
             ss -tulnp | grep 8083 || true
         '''
     }
 }
-
-    }
+    
 
     post {
         success {
