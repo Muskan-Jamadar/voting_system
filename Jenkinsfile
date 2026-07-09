@@ -41,26 +41,30 @@ pipeline {
             }
         }
 
-    stage("Run Spring Boot Application") {
-    steps {
-        sh '''
-            echo "Stopping existing application..."
-            pkill -f "demo-0.0.1-SNAPSHOT.jar" || true
+        stage('Run Spring Boot Application') {
+            steps {
+                sh '''
+                echo "Stopping existing application..."
+                pkill -f "demo-0.0.1-SNAPSHOT.jar" || true
 
-            echo "Starting Spring Boot application..."
+                echo "Starting Spring Boot application..."
 
-            BUILD_ID=dontKillMe \
-            nohup $JAVA_HOME/bin/java -jar target/demo-0.0.1-SNAPSHOT.jar \
-            > app.log 2>&1 &
+                BUILD_ID=dontKillMe nohup $JAVA_HOME/bin/java \
+                -jar target/demo-0.0.1-SNAPSHOT.jar \
+                > app.log 2>&1 &
 
-            sleep 10
+                sleep 10
 
-            ps -ef | grep demo | grep -v grep || true
-            ss -tulnp | grep 8083 || true
-        '''
-    }
-}
-    
+                echo "Checking process..."
+                ps -ef | grep demo | grep -v grep || true
+
+                echo "Checking port..."
+                ss -tulnp | grep 8083 || true
+                '''
+            }
+        }
+
+    }   // <-- This closing brace for stages was missing
 
     post {
         success {
