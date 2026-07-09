@@ -8,12 +8,22 @@ pipeline {
 
     stages {
         stage('Build') {
-            steps {
-                sh 'java -version'
-                sh 'mvn -version'
-                sh 'mvn clean package'
-            }
-        }
+    steps {
+        sh '''
+        echo "===== JAVA ====="
+        java -version
+        javac -version
+
+        echo "===== MAVEN ====="
+        mvn -version
+
+        echo "===== JAVA_HOME ====="
+        echo $JAVA_HOME
+
+        mvn clean package
+        '''
+    }
+}
 
         stage('Test') {
             steps {
