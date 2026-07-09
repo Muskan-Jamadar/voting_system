@@ -40,15 +40,24 @@ pipeline {
 }
 
         stage('Run Application') {
-            steps {
-                sh '''
-                if pgrep -f voting_system-0.0.1-SNAPSHOT.jar; then
-                    sudo pkill -f voting_system-0.0.1-SNAPSHOT.jar
-                fi
+    steps {
+        sh '''
+        echo "Checking target directory..."
+        ls -lh target
 
-                sudo java -jar target/voting_system-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
-                '''
-            }
+        echo "Stopping old application..."
+        pkill -f demo-0.0.1-SNAPSHOT.jar || true
+
+        echo "Starting application..."
+        nohup java -jar target/demo-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+
+        sleep 10
+
+        echo "Application status:"
+        ps -ef | grep demo-0.0.1-SNAPSHOT.jar | grep -v grep
+        '''
+    }
+}
         }
     }
 }
