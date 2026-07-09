@@ -41,32 +41,14 @@ pipeline {
             }
         }
 
-        stage('Run Application') {
+    stage("Run Spring Boot Application") {
     steps {
         sh '''
-        echo "Target contents:"
-        ls -lh target
+            echo "Stopping existing application..."
+            pkill -f "demo-0.0.1-SNAPSHOT.jar" || true
 
-        JAR=$(find target -maxdepth 1 -name "*.jar" ! -name "*.original" | head -n 1)
-
-        if [ -z "$JAR" ]; then
-            echo "No executable JAR found!"
-            exit 1
-        fi
-
-        echo "Found JAR: $JAR"
-
-        pkill -f "$(basename "$JAR")" || true
-
-        nohup java -jar "$JAR" > app.log 2>&1 &
-
-        sleep 10
-
-        echo "Application process:"
-        ps -ef | grep "$(basename "$JAR")" | grep -v grep || true
-
-        echo "Application log:"
-        tail -20 app.log || true
+            echo "Starting Spring Boot application..."
+            nohup java -jar target/demo-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
         '''
     }
 }
