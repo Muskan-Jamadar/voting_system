@@ -30,6 +30,14 @@ pipeline {
                 sh 'mvn test'
             }
         }
+        stage('Check Target') {
+    steps {
+        sh '''
+        echo "Contents of target directory:"
+        ls -lh target
+        '''
+    }
+}
 
         stage('Run Application') {
             steps {
