@@ -33,7 +33,7 @@ stage('Checkout') {
     steps {
         git branch: 'main',
             credentialsId: 'github-creds',
-            url: 'https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git'
+            url: 'https://github.com/Muskan-Jamadar/voting_system.git'
     }
 }
         stage('Test') {
