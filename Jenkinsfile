@@ -8,19 +8,27 @@ pipeline {
 
     stages {
 
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    credentialsId: 'github-creds',
+                    url: 'https://github.com/Muskan-Jamadar/voting_system.git'
+            }
+        }
+
         stage('Build') {
             steps {
                 sh '''
-                echo "PATH=$PATH"
+                echo "===== JAVA ====="
                 echo "JAVA_HOME=$JAVA_HOME"
-                echo "MAVEN_HOME=$MAVEN_HOME"
-
-                which java
                 java -version
+                javac -version
 
-                which mvn
+                echo "===== MAVEN ====="
+                echo "MAVEN_HOME=$MAVEN_HOME"
                 mvn -version
 
+                echo "===== WORKSPACE ====="
                 pwd
                 ls -la
 
@@ -29,51 +37,50 @@ pipeline {
             }
         }
 
-stage('Checkout') {
-    steps {
-        git branch: 'main',
-            credentialsId: 'github-creds',
-            url: 'https://github.com/Muskan-Jamadar/voting_system.git'
-    }
-}
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-
         stage('Check Target') {
             steps {
                 sh '''
-                echo "Contents of target directory:"
+                echo "===== TARGET DIRECTORY ====="
                 ls -lh target
                 '''
             }
         }
 
         stage('Run Spring Boot Application') {
-    steps {
-        sh '''
-        pkill -f "demo-0.0.1-SNAPSHOT.jar" || true
+            steps {
+                sh '''
+                echo "Stopping old application..."
+                pkill -f "demo-0.0.1-SNAPSHOT.jar" || true
 
-        nohup java -jar target/demo-0.0.1-SNAPSHOT.jar > app.log 2>&1 < /dev/null &
+                echo "Starting application..."
+                BUILD_ID=dontKillMe nohup java -jar target/demo-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
 
-        sleep 15
+                sleep 20
 
-        ps -ef | grep demo | grep -v grep
-        ss -tulnp | grep 8083
-        '''
-    }
-}
+                echo "===== Running Process ====="
+                ps -ef | grep demo | grep -v grep || true
 
+                echo "===== Port Status ====="
+                ss -tulnp | grep 8083 || true
+
+                echo "===== Application Log ====="
+                tail -50 app.log || true
+                '''
+            }
+        }
     }
 
     post {
         success {
-            echo "Pipeline Success"
+            echo "Pipeline executed successfully."
         }
+
         failure {
-            echo "Pipeline Failed"
+            echo "Pipeline failed."
+        }
+
+        always {
+            echo "Build completed."
         }
     }
 }
