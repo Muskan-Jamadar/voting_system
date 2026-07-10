@@ -9,20 +9,25 @@ pipeline {
     stages {
 
         stage('Build') {
-            steps {
-                sh '''
-                echo "===== JAVA ====="
-                java -version
-                javac -version
+    steps {
+        sh '''
+        echo "PATH=$PATH"
+        echo "JAVA_HOME=$JAVA_HOME"
+        echo "MAVEN_HOME=$MAVEN_HOME"
 
-                echo "===== MAVEN ====="
-                mvn -version
+        which java
+        java -version
 
-                echo "===== JAVA_HOME ====="
-                echo $JAVA_HOME
+        which mvn
+        mvn -version
 
-                mvn clean package
-                '''
+        pwd
+        ls -la
+
+        mvn clean package
+        '''
+    }
+}  '''
             }
         }
 
