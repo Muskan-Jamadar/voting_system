@@ -29,6 +29,13 @@ pipeline {
             }
         }
 
+stage('Checkout') {
+    steps {
+        git branch: 'main',
+            credentialsId: 'github-creds',
+            url: 'https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git'
+    }
+}
         stage('Test') {
             steps {
                 sh 'mvn test'
