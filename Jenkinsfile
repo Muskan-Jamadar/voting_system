@@ -9,25 +9,23 @@ pipeline {
     stages {
 
         stage('Build') {
-    steps {
-        sh '''
-        echo "PATH=$PATH"
-        echo "JAVA_HOME=$JAVA_HOME"
-        echo "MAVEN_HOME=$MAVEN_HOME"
+            steps {
+                sh '''
+                echo "PATH=$PATH"
+                echo "JAVA_HOME=$JAVA_HOME"
+                echo "MAVEN_HOME=$MAVEN_HOME"
 
-        which java
-        java -version
+                which java
+                java -version
 
-        which mvn
-        mvn -version
+                which mvn
+                mvn -version
 
-        pwd
-        ls -la
+                pwd
+                ls -la
 
-        mvn clean package
-        '''
-    }
-}  '''
+                mvn clean package
+                '''
             }
         }
 
@@ -69,7 +67,7 @@ pipeline {
             }
         }
 
-    }   // <-- This closing brace for stages was missing
+    }
 
     post {
         success {
