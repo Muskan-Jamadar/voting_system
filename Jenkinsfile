@@ -45,27 +45,19 @@ pipeline {
         }
 
         stage('Run Spring Boot Application') {
-            steps {
-                sh '''
-                echo "Stopping existing application..."
-                pkill -f "demo-0.0.1-SNAPSHOT.jar" || true
+    steps {
+        sh '''
+        pkill -f "demo-0.0.1-SNAPSHOT.jar" || true
 
-                echo "Starting Spring Boot application..."
+        nohup java -jar target/demo-0.0.1-SNAPSHOT.jar > app.log 2>&1 < /dev/null &
 
-                BUILD_ID=dontKillMe nohup $JAVA_HOME/bin/java \
-                -jar target/demo-0.0.1-SNAPSHOT.jar \
-                > app.log 2>&1 &
+        sleep 15
 
-                sleep 10
-
-                echo "Checking process..."
-                ps -ef | grep demo | grep -v grep || true
-
-                echo "Checking port..."
-                ss -tulnp | grep 8083 || true
-                '''
-            }
-        }
+        ps -ef | grep demo | grep -v grep
+        ss -tulnp | grep 8083
+        '''
+    }
+}
 
     }
 
