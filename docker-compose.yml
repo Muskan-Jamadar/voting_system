@@ -12,18 +12,17 @@ services:
       - "3306:3306"
 
     volumes:
-      - ./mysql-data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
 
     networks:
       - springboot-mysql-network
 
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p1234"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pintern123"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
-
 
   springboot-app:
     build: .
@@ -44,8 +43,9 @@ services:
     networks:
       - springboot-mysql-network
 
+volumes:
+  mysql-data:
 
 networks:
-
   springboot-mysql-network:
     name: springboot-mysql-network
