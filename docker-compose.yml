@@ -25,27 +25,20 @@ services:
       start_period: 30s
 
   springboot-app:
-    build: .
-    container_name: voting-app
+  build: .
+  container_name: voting-app
 
-    ports:
-      - "8085:8080"
+  ports:
+    - "8085:8085"
 
-    depends_on:
-      mysql-container:
-        condition: service_healthy
+  depends_on:
+    mysql-container:
+      condition: service_healthy
 
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/voting_system?createDatabaseIfNotExist=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: intern123
+  environment:
+    SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/voting_system?createDatabaseIfNotExist=true
+    SPRING_DATASOURCE_USERNAME: root
+    SPRING_DATASOURCE_PASSWORD: intern123
 
-    networks:
-      - springboot-mysql-network
-
-volumes:
-  mysql-data:
-
-networks:
-  springboot-mysql-network:
-    name: springboot-mysql-network
+  networks:
+    - springboot-mysql-network
