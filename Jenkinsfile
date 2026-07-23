@@ -98,39 +98,28 @@ pipeline {
 
 
         stage('Deploy Application') {
+    when {
+        expression { params.ACTION == 'DEPLOY' }
+    }
+    steps {
+        sh '''
+        docker compose down
+        docker compose up --build -d
+        '''
+    }
+}
 
-            when {
-                expression { params.ACTION == 'DEPLOY' }
-            }
-
-            steps {
-
-                echo "Starting Application using Docker Compose..."
-
-                sh '''
-                docker-compose down
-                docker-compose up --build -d
-                '''
-            }
-        }
-
-
-        stage('Remove Application') {
-
-            when {
-                expression { params.ACTION == 'REMOVE' }
-            }
-
-            steps {
-
-                echo "Removing Application Containers..."
-
-                sh '''
-                docker-compose down
-                docker image prune -af
-                '''
-            }
-        }
+stage('Remove Application') {
+    when {
+        expression { params.ACTION == 'REMOVE' }
+    }
+    steps {
+        sh '''
+        docker compose down
+        docker image prune -af
+        '''
+    }
+}
 
     }
 
