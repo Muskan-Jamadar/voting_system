@@ -24,11 +24,14 @@ pipeline {
 
 
         stage('Checkout Code') {
+
             when {
                 expression { params.ACTION == 'DEPLOY' }
             }
+
             steps {
                 echo "Pulling latest code from GitHub..."
+
                 git branch: 'main',
                 url: 'https://github.com/Muskan-Jamadar/voting_system.git'
             }
@@ -42,6 +45,7 @@ pipeline {
             }
 
             steps {
+
                 echo "Building Spring Boot Application..."
 
                 sh 'mvn clean package -DskipTests'
@@ -104,8 +108,8 @@ pipeline {
                 echo "Starting Application using Docker Compose..."
 
                 sh '''
-                docker compose down
-                docker compose up --build -d
+                docker-compose down
+                docker-compose up --build -d
                 '''
             }
         }
@@ -122,7 +126,7 @@ pipeline {
                 echo "Removing Application Containers..."
 
                 sh '''
-                docker compose down
+                docker-compose down
                 docker image prune -af
                 '''
             }
@@ -134,19 +138,14 @@ pipeline {
     post {
 
         success {
-
             echo "Pipeline executed successfully..."
         }
 
-
         failure {
-
             echo "Pipeline execution failed..."
         }
 
-
         always {
-
             echo "Pipeline completed..."
         }
     }
