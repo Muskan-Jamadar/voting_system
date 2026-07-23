@@ -1,86 +1,153 @@
 pipeline {
+
     agent any
 
+    parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['DEPLOY', 'REMOVE'],
+            description: 'Choose whether to deploy or remove application'
+        )
+    }
+
     tools {
-        jdk 'jdk21'
         maven 'maven'
     }
 
-    stages {
-
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                    credentialsId: 'github-creds',
-                    url: 'https://github.com/Muskan-Jamadar/voting_system.git'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh '''
-                echo "===== JAVA ====="
-                echo "JAVA_HOME=$JAVA_HOME"
-                java -version
-                javac -version
-
-                echo "===== MAVEN ====="
-                echo "MAVEN_HOME=$MAVEN_HOME"
-                mvn -version
-
-                echo "===== WORKSPACE ====="
-                pwd
-                ls -la
-
-                mvn clean package
-                '''
-            }
-        }
-
-        stage('Check Target') {
-            steps {
-                sh '''
-                echo "===== TARGET DIRECTORY ====="
-                ls -lh target
-                '''
-            }
-        }
-
-        stage('Run Spring Boot Application') {
-            steps {
-                sh '''
-                echo "Stopping old application..."
-                pkill -f "demo-0.0.1-SNAPSHOT.jar" || true
-
-                echo "Starting application..."
-                BUILD_ID=dontKillMe nohup java -jar target/demo-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
-
-                sleep 20
-
-                echo "===== Running Process ====="
-                ps -ef | grep demo | grep -v grep || true
-
-                echo "===== Port Status ====="
-                ss -tulnp | grep 8083 || true
-
-                echo "===== Application Log ====="
-                tail -50 app.log || true
-                '''
-            }
-        }
+    environment {
+        APP_NAME = "voting-app"
+        DOCKER_IMAGE = "jamadar21/online-voting-system"
     }
 
-    post {
-        success {
-            echo "Pipeline executed successfully."
+
+    stages {
+
+
+        stage('Checkout Code') {
+            when {
+                expression { params.ACTION == 'DEPLOY' }
+            }
+            steps {
+                echo "Pulling latest code from GitHub..."
+                git branch: 'main',
+                url: 'https://github.com/Muskan-Jamadar/voting_system.git'
+            }
         }
+
+
+        stage('Build JAR') {
+
+            when {
+                expression { params.ACTION == 'DEPLOY' }
+            }
+
+            steps {
+                echo "Building Spring Boot Application..."
+
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+
+        stage('Docker Build') {
+
+            when {
+                expression { params.ACTION == 'DEPLOY' }
+            }
+
+            steps {
+
+                echo "Building Docker Image..."
+
+                sh '''
+                docker build -t $DOCKER_IMAGE:latest .
+                '''
+            }
+        }
+
+
+        stage('Docker Login & Push') {
+
+            when {
+                expression { params.ACTION == 'DEPLOY' }
+            }
+
+            steps {
+
+                echo "Pushing Image to Docker Hub..."
+
+                withCredentials([
+                    usernamePassword(
+                    credentialsId: 'docker-credentials',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                    )
+                ]) {
+
+                    sh '''
+                    docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+                    docker push $DOCKER_IMAGE:latest
+                    '''
+                }
+            }
+        }
+
+
+        stage('Deploy Application') {
+
+            when {
+                expression { params.ACTION == 'DEPLOY' }
+            }
+
+            steps {
+
+                echo "Starting Application using Docker Compose..."
+
+                sh '''
+                docker compose down
+                docker compose up --build -d
+                '''
+            }
+        }
+
+
+        stage('Remove Application') {
+
+            when {
+                expression { params.ACTION == 'REMOVE' }
+            }
+
+            steps {
+
+                echo "Removing Application Containers..."
+
+                sh '''
+                docker compose down
+                docker image prune -af
+                '''
+            }
+        }
+
+    }
+
+
+    post {
+
+        success {
+
+            echo "Pipeline executed successfully..."
+        }
+
 
         failure {
-            echo "Pipeline failed."
+
+            echo "Pipeline execution failed..."
         }
 
+
         always {
-            echo "Build completed."
+
+            echo "Pipeline completed..."
         }
     }
 }
